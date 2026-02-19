@@ -19,10 +19,29 @@ stages:
     - script: echo Running tests
       displayName: 'Run Tests'
 
-- stage: Deploy
+- stage: AzureTest
   dependsOn: Test
+  jobs:
+  - job: AzureTestJob
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'Azure subscription 1(0fdd7122-3105-4287-b900-df212ee1e24f)'
+        scriptType: 'ps'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          Connect-AzAccount
+          Get-AzResourceGroup
+          Get-AzVM
+      displayName: 'Azure PowerShell Test'
+
+- stage: Deploy
+  dependsOn: AzureTest
   jobs:
   - job: DeployJob
     steps:
     - script: echo Deploying to production
       displayName: 'Deploy Application'
+
+
+
