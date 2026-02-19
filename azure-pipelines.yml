@@ -27,13 +27,13 @@ stages:
     - task: AzureCLI@2
       inputs:
         azureSubscription: 'Azure subscription 1(0fdd7122-3105-4287-b900-df212ee1e24f)'
-        scriptType: 'ps'
+        scriptType: 'bash'  # Changed from 'ps' to 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          Connect-AzAccount
-          Get-AzResourceGroup
-          Get-AzVM
-      displayName: 'Azure PowerShell Test'
+          az login --service-principal -u $servicePrincipalId -p $servicePrincipalKey --tenant $tenantId
+          az group list
+          az vm list
+      displayName: 'Azure CLI Test'
 
 - stage: Deploy
   dependsOn: AzureTest
@@ -42,6 +42,3 @@ stages:
     steps:
     - script: echo Deploying to production
       displayName: 'Deploy Application'
-
-
-
